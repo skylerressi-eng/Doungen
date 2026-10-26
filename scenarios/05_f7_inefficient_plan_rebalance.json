@@ -1,0 +1,58 @@
+{
+  "name": "F7 inefficient adopted plan and rebalance",
+  "description": "The party adopts a lopsided split (one player owns most rooms). The planner must detect that the adopted plan is slower than an optimized one, offer the replacement, and keep it stable after an unexpected discovery.",
+  "floor": "F7",
+  "party": [
+    { "id": "p1", "name": "Mage", "class": "mage", "isSelf": true },
+    { "id": "p2", "name": "Archer", "class": "archer" },
+    { "id": "p3", "name": "Berserk", "class": "berserk" },
+    { "id": "p4", "name": "Tank", "class": "tank" },
+    { "id": "p5", "name": "Healer", "class": "healer" }
+  ],
+  "layout": [
+    "B1 B1 R5 R5 BL R6",
+    "B1 B1 P2 R7 R7 R6",
+    "R2 R3 R3 R3 MB R8",
+    "R2 P1 FA R4 R4 R8",
+    "R9 R9 R10 R4 . .",
+    "E R12 R10 R13 R13 ."
+  ],
+  "rooms": {
+    "E": { "type": "entrance" }, "BL": { "type": "blood" }, "FA": { "type": "fairy" },
+    "P1": { "type": "puzzle", "puzzle": "quiz" }, "P2": { "type": "puzzle", "puzzle": "teleport_maze" },
+    "MB": { "type": "miniboss" }, "T1": { "type": "trap" }
+  },
+  "steps": [
+    {
+      "note": "Run starts with an automatically locked, balanced plan",
+      "elapsed": 0,
+      "events": [{ "type": "run_start" }],
+      "expect": { "adopted": true, "noWarnings": ["rebalance", "imbalance"] }
+    },
+    {
+      "note": "Party overrides with a lopsided split agreed in chat: Tank owns nearly everything",
+      "elapsed": 5,
+      "events": [{ "type": "plan_adopt", "assignments": { "B1": "p4", "R2": "p4", "R3": "p4", "R4": "p4", "R5": "p4", "R6": "p4", "R7": "p4", "R8": "p4", "R10": "p4", "R12": "p4", "R13": "p4", "MB": "p4", "R9": "p4" } }],
+      "expect": { "warnings": ["rebalance", "imbalance"] }
+    },
+    {
+      "note": "Adopting the optimized plan clears the warning",
+      "elapsed": 6,
+      "events": [{ "type": "plan_release" }, { "type": "plan_adopt", "assignments": {} }],
+      "expect": { "noWarnings": ["rebalance"], "maxRouteSpread": 100 }
+    },
+    {
+      "note": "Unexpected discovery in the south-east corner: new rooms join existing routes without reshuffling",
+      "elapsed": 40,
+      "layout": [
+        "B1 B1 R5 R5 BL R6",
+        "B1 B1 P2 R7 R7 R6",
+        "R2 R3 R3 R3 MB R8",
+        "R2 P1 FA R4 R4 R8",
+        "R9 R9 R10 R4 T1 R11",
+        "E R12 R10 R13 R13 R11"
+      ],
+      "expect": { "planned": ["T1", "R11"], "adopted": true, "allRoomsPlanned": true }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "F4 party changes mid-run",
+  "description": "The Tank disconnects, a player swaps class, and a replacement joins. Assignments must be recomputed without leaving any room orphaned, and roles (rusher, puzzle solver) must follow the new composition.",
+  "floor": "F4",
+  "party": [
+    { "id": "p1", "name": "Berserk", "class": "berserk", "isSelf": true },
+    { "id": "p2", "name": "Archer", "class": "archer" },
+    { "id": "p3", "name": "Berserk2", "class": "berserk" },
+    { "id": "p4", "name": "Tank", "class": "tank" },
+    { "id": "p5", "name": "Healer", "class": "healer" }
+  ],
+  "layout": [
+    "R1 R1 R2 R3 BL",
+    "R4 P1 R2 R3 R5",
+    "R4 R6 R6 R7 R5",
+    "R8 R8 P2 R7 R9",
+    "R10 R11 R11 TR R9",
+    "E R12 MB R13 R13"
+  ],
+  "rooms": {
+    "E": { "type": "entrance" }, "BL": { "type": "blood" },
+    "P1": { "type": "puzzle", "puzzle": "boulder" }, "P2": { "type": "puzzle", "puzzle": "ice_path" },
+    "MB": { "type": "miniboss" }, "TR": { "type": "trap" }
+  },
+  "steps": [
+    {
+      "note": "Run starts; Archer is the best available rusher, Healer takes puzzles",
+      "elapsed": 0,
+      "events": [{ "type": "run_start" }],
+      "expect": { "rusher": "p2", "puzzleSolver": "p5", "allRoomsPlanned": true, "distinctClassAdvice": false }
+    },
+    {
+      "note": "Tank leaves: their rooms are redistributed and the plan unlocks",
+      "elapsed": 60,
+      "events": [{ "type": "player_remove", "playerId": "p4" }],
+      "expect": { "partySize": 4, "allRoomsPlanned": true, "adopted": false, "planIncludes": { "p1": "No Tank in the party: you hold boss attention" } }
+    },
+    {
+      "note": "Berserk2 swaps to Mage: the Mage becomes the rusher",
+      "elapsed": 70,
+      "events": [{ "type": "player_update", "playerId": "p3", "patch": { "class": "mage" } }],
+      "expect": { "rusher": "p3", "allRoomsPlanned": true, "actions": { "p3": { "type": "rush" } } }
+    },
+    {
+      "note": "Healer leaves too: Berserk becomes puzzle solver",
+      "elapsed": 80,
+      "events": [{ "type": "player_remove", "playerId": "p5" }],
+      "expect": { "puzzleSolver": "p1", "allRoomsPlanned": true }
+    },
+    {
+      "note": "A replacement Tank joins at the entrance and receives work",
+      "elapsed": 90,
+      "events": [{ "type": "player_add", "player": { "id": "p6", "name": "NewTank", "class": "tank" } }],
+      "expect": { "partySize": 4, "puzzleSolver": "p6", "allRoomsPlanned": true, "maxRouteSpread": 120 }
+    }
+  ]
+}

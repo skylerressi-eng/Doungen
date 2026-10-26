@@ -1,0 +1,88 @@
+{
+  "name": "F5 standard 5-player run on a fully known map",
+  "description": "Baseline: every room is known before the run starts. The planner should pick the Mage as blood rusher, give puzzles to the Healer, cover every room, and project S+ with a time well under the F5 limit.",
+  "floor": "F5",
+  "party": [
+    { "id": "p1", "name": "Mage", "class": "mage", "isSelf": true },
+    { "id": "p2", "name": "Archer", "class": "archer" },
+    { "id": "p3", "name": "Berserk", "class": "berserk" },
+    { "id": "p4", "name": "Tank", "class": "tank" },
+    { "id": "p5", "name": "Healer", "class": "healer" }
+  ],
+  "layout": [
+    "B1 B1 R5 R5 BL R6",
+    "B1 B1 P2 R7 R7 R6",
+    "R2 R3 R3 R3 MB R8",
+    "R2 P1 FA R4 R4 R8",
+    "R9 R9 R10 R4 T1 R11",
+    "E R12 R10 R13 R13 R11"
+  ],
+  "rooms": {
+    "E": { "type": "entrance" },
+    "BL": { "type": "blood" },
+    "FA": { "type": "fairy" },
+    "P1": { "type": "puzzle", "puzzle": "three_weirdos" },
+    "P2": { "type": "puzzle", "puzzle": "higher_lower" },
+    "MB": { "type": "miniboss", "secretsTotal": 3 },
+    "T1": { "type": "trap", "secretsTotal": 2 },
+    "B1": { "secretsTotal": 8, "crypts": 2 },
+    "R3": { "secretsTotal": 5, "crypts": 1 },
+    "R4": { "secretsTotal": 6, "crypts": 2 },
+    "R9": { "secretsTotal": 4, "hasWitherKey": true },
+    "R13": { "secretsTotal": 3, "crypts": 1 }
+  },
+  "steps": [
+    {
+      "note": "Map entered before the run starts; doors recorded",
+      "elapsed": 0,
+      "events": [
+        { "type": "door_set", "a": "BL", "b": "R7", "doorType": "blood" },
+        { "type": "door_set", "a": "BL", "b": "R5", "doorType": "wall" },
+        { "type": "door_set", "a": "BL", "b": "R6", "doorType": "wall" },
+        { "type": "door_set", "a": "R3", "b": "R7", "doorType": "wither" },
+        { "type": "door_set", "a": "P2", "b": "R7", "doorType": "wall" },
+        { "type": "door_set", "a": "MB", "b": "R7", "doorType": "wall" }
+      ],
+      "expect": {
+        "phase": "setup",
+        "rusher": "p1",
+        "puzzleSolver": "p5",
+        "allRoomsPlanned": true,
+        "distinctClassAdvice": true,
+        "actions": { "p1": { "type": "setup" } },
+        "planIncludes": { "p1": "You are the blood rusher", "p5": "You are the puzzle solver" },
+        "exploring": false
+      }
+    },
+    {
+      "note": "Run starts: plan is locked in and the Mage rushes blood via the wither door",
+      "elapsed": 0,
+      "events": [{ "type": "run_start" }],
+      "expect": {
+        "phase": "clearing",
+        "adopted": true,
+        "actions": { "p1": { "type": "clear", "roomId": "R9" } },
+        "assignedTo": { "R9": "p1" },
+        "gradeAtLeast": "S+",
+        "finishBefore": 600,
+        "maxRouteSpread": 90,
+        "noWarnings": ["rebalance", "behind_schedule", "secrets_short"]
+      }
+    },
+    {
+      "note": "Mage takes the key room, opens blood; others confirm rooms",
+      "elapsed": 45,
+      "events": [
+        { "type": "room_clear", "roomId": "R9", "playerId": "p1", "secretsFound": 1 },
+        { "type": "blood_open" },
+        { "type": "player_move", "playerId": "p1", "roomId": "BL" },
+        { "type": "puzzle_result", "roomId": "P1", "result": "solved", "playerId": "p5" }
+      ],
+      "expect": {
+        "actions": { "p1": { "type": "blood_camp" } },
+        "notPlanned": ["P1", "R9"],
+        "gradeAtLeast": "S+"
+      }
+    }
+  ]
+}

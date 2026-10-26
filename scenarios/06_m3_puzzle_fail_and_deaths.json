@@ -1,0 +1,51 @@
+{
+  "name": "M3 failed puzzle, deaths and recovery",
+  "description": "A failed puzzle (-14 skill) and a death put S+ out of reach. The dead player must be told to wait, the Healer to revive, and the score shortfall and class-specific recovery must be shown.",
+  "floor": "M3",
+  "party": [
+    { "id": "p1", "name": "Berserk", "class": "berserk", "isSelf": true },
+    { "id": "p2", "name": "Healer", "class": "healer" },
+    { "id": "p3", "name": "Archer", "class": "archer" }
+  ],
+  "layout": [
+    "R1 R1 R2 BL .",
+    "P1 R3 R2 R4 R4",
+    "R5 R3 FA R6 R4",
+    "R5 P2 R7 R6 MB",
+    "E R8 R7 R9 R9"
+  ],
+  "rooms": {
+    "E": { "type": "entrance" }, "BL": { "type": "blood" }, "FA": { "type": "fairy" },
+    "P1": { "type": "puzzle", "puzzle": "quiz" }, "P2": { "type": "puzzle", "puzzle": "three_weirdos" },
+    "MB": { "type": "miniboss" }
+  },
+  "steps": [
+    {
+      "note": "Run starts",
+      "elapsed": 0,
+      "events": [{ "type": "run_start" }],
+      "expect": { "rusher": "p3", "puzzleSolver": "p2" }
+    },
+    {
+      "note": "Quiz failed and the Berserk dies",
+      "elapsed": 70,
+      "events": [
+        { "type": "puzzle_result", "roomId": "P1", "result": "failed", "playerId": "p2" },
+        { "type": "death", "playerId": "p1" }
+      ],
+      "expect": {
+        "warnings": ["puzzle_failed", "score_short", "dead_p1"],
+        "gradeBelow": "S+",
+        "actions": { "p1": { "type": "wait_revive" }, "p2": { "type": "revive" } },
+        "recoveryFor": ["p1", "p2", "p3"],
+        "notPlanned": ["P1"]
+      }
+    },
+    {
+      "note": "Berserk revived: back on the route",
+      "elapsed": 85,
+      "events": [{ "type": "revive", "playerId": "p1" }],
+      "expect": { "noWarnings": ["dead_p1"], "actions": { "p1": { "type": "clear" } } }
+    }
+  ]
+}

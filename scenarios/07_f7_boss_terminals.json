@@ -1,0 +1,51 @@
+{
+  "name": "F7 boss phases and Goldor terminal assignments",
+  "description": "In the boss, each class gets its own phase duties. In P3 every player is pointed to their next device/terminal/lever, and completing a slot advances them.",
+  "floor": "F7",
+  "party": [
+    { "id": "p1", "name": "Berserk", "class": "berserk", "isSelf": true },
+    { "id": "p2", "name": "Archer", "class": "archer" },
+    { "id": "p3", "name": "Mage", "class": "mage" },
+    { "id": "p4", "name": "Tank", "class": "tank" },
+    { "id": "p5", "name": "Healer", "class": "healer" }
+  ],
+  "layout": ["E R1 BL"],
+  "rooms": { "E": { "type": "entrance" }, "BL": { "type": "blood" } },
+  "steps": [
+    {
+      "note": "Clear done; enter boss (Maxor)",
+      "elapsed": 300,
+      "events": [
+        { "type": "run_start", "elapsed": 300 },
+        { "type": "room_clear", "roomId": "R1", "playerId": "p1" },
+        { "type": "room_clear", "roomId": "BL", "playerId": "p3" },
+        { "type": "boss_start" }
+      ],
+      "expect": { "phase": "boss", "actions": { "p1": { "type": "boss", "titleIncludes": "Maxor" } }, "distinctClassAdvice": true }
+    },
+    {
+      "note": "Goldor phase: everyone sees their own first slot",
+      "elapsed": 420,
+      "events": [{ "type": "boss_phase", "phase": "p3" }],
+      "expect": {
+        "actions": {
+          "p1": { "titleIncludes": "S1 Simon Says" },
+          "p2": { "titleIncludes": "Goldor terminals: S1" },
+          "p5": { "titleIncludes": "Goldor terminals: S1" }
+        }
+      }
+    },
+    {
+      "note": "Simon Says done: Berserk moves to their next slot",
+      "elapsed": 440,
+      "events": [{ "type": "terminal_set", "section": 1, "kind": "device", "done": true }],
+      "expect": { "actions": { "p1": { "titleIncludes": "Goldor terminals: S1 lever" } } }
+    },
+    {
+      "note": "Run complete",
+      "elapsed": 620,
+      "events": [{ "type": "run_complete", "bossKilled": true }],
+      "expect": { "phase": "complete", "actions": { "p1": { "type": "complete" } } }
+    }
+  ]
+}

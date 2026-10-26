@@ -1,0 +1,39 @@
+{
+  "name": "F1 solo run",
+  "description": "A single player must clear, solve the puzzle and open blood themselves; no rusher is assigned and the plan says so.",
+  "floor": "F1",
+  "party": [{ "id": "p1", "name": "Solo", "class": "mage", "isSelf": true }],
+  "layout": [
+    "R1 R1 R2 BL",
+    "P1 R3 R2 R4",
+    "R5 R3 R6 R4",
+    "E R7 R6 R8"
+  ],
+  "rooms": { "E": { "type": "entrance" }, "BL": { "type": "blood" }, "P1": { "type": "puzzle", "puzzle": "ice_fill" } },
+  "steps": [
+    {
+      "note": "Run starts",
+      "elapsed": 0,
+      "events": [{ "type": "run_start" }],
+      "expect": { "rusher": null, "puzzleSolver": "p1", "allRoomsPlanned": true, "planIncludes": { "p1": "Solo run" }, "actions": { "p1": { "type": "clear" } } }
+    },
+    {
+      "note": "All rooms cleared: open blood",
+      "elapsed": 260,
+      "events": [
+        { "type": "room_clear", "roomId": "R1" }, { "type": "room_clear", "roomId": "R2" }, { "type": "room_clear", "roomId": "R3" },
+        { "type": "room_clear", "roomId": "R4" }, { "type": "room_clear", "roomId": "R5" }, { "type": "room_clear", "roomId": "R6" },
+        { "type": "room_clear", "roomId": "R7" }, { "type": "room_clear", "roomId": "R8" },
+        { "type": "puzzle_result", "roomId": "P1", "result": "solved" },
+        { "type": "strategy_update", "patch": { "secretMode": "none" } }
+      ],
+      "expect": { "actions": { "p1": { "type": "go_blood" } } }
+    },
+    {
+      "note": "Blood opened then cleared: enter boss (crypts target dropped)",
+      "elapsed": 330,
+      "events": [{ "type": "blood_open" }, { "type": "room_clear", "roomId": "BL" }, { "type": "strategy_update", "patch": { "cryptTarget": 0 } }],
+      "expect": { "actions": { "p1": { "type": "enter_boss" } } }
+    }
+  ]
+}

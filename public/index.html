@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dungeon Co-Pilot</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Dungeon Co-Pilot</div>
+    <select id="sessionSelect" aria-label="Session"></select>
+    <button id="newSessionBtn" class="btn">New run</button>
+    <div class="spacer"></div>
+    <div id="runInfo" class="run-info"></div>
+    <div id="clock" class="clock" title="Run timer">0:00</div>
+    <div id="runControls" class="run-controls"></div>
+    <button id="undoBtn" class="btn ghost" title="Undo last entry">Undo</button>
+    <button id="redoBtn" class="btn ghost" title="Redo">Redo</button>
+  </header>
+
+  <main id="app" class="layout hidden">
+    <section class="col col-left">
+      <div class="card">
+        <div class="card-head">
+          <h2>Map</h2>
+          <div class="legend" id="legend"></div>
+          <label class="inline">Route of <select id="routePlayer"></select></label>
+        </div>
+        <div class="map-wrap"><svg id="map" role="img" aria-label="Dungeon map"></svg></div>
+        <p class="hint">Click empty cells to select them, then add a room. Click a room to inspect or correct it. Click a door marker to cycle its type.</p>
+        <div id="cellPanel"></div>
+      </div>
+      <div class="card" id="inspector"></div>
+    </section>
+
+    <section class="col col-right">
+      <div class="card now-card" id="nowCard"></div>
+      <div class="card" id="warnings"></div>
+      <div class="grid2">
+        <div class="card" id="scoreCard"></div>
+        <div class="card" id="timelineCard"></div>
+      </div>
+      <div class="card" id="partyCard"></div>
+      <div class="card">
+        <div class="tabs" id="tabs">
+          <button data-tab="plan" class="tab active">Execution plan</button>
+          <button data-tab="boss" class="tab">Boss</button>
+          <button data-tab="objectives" class="tab">Objectives</button>
+          <button data-tab="strategy" class="tab">Strategy</button>
+          <button data-tab="log" class="tab">Log</button>
+        </div>
+        <div id="tabBody"></div>
+      </div>
+    </section>
+  </main>
+
+  <section id="empty" class="empty">
+    <h1>Dungeon Co-Pilot</h1>
+    <p>Plan, track and adapt a full Catacombs run. You play; the co-pilot keeps the map, routes, score and class duties up to date as you enter what happens.</p>
+    <button class="btn primary" id="emptyNew">Start a new run</button>
+  </section>
+
+  <dialog id="newDialog">
+    <form method="dialog" id="newForm">
+      <h2>New run</h2>
+      <label>Name <input name="name" placeholder="Optional"></label>
+      <label>Floor <select name="floorId" id="floorSelect"></select></label>
+      <fieldset>
+        <legend>Party (tick "You" for your own player)</legend>
+        <div id="partyRows"></div>
+      </fieldset>
+      <label>Target <select name="target"><option>S+</option><option>S</option><option>A</option><option value="complete">Just complete</option></select></label>
+      <label>Secrets <select name="secretMode"><option value="target">Requirement + buffer</option><option value="all">All secrets</option><option value="none">None</option></select></label>
+      <label>Split <select name="splitMode"><option value="split">Split the map</option><option value="stack">Stack together</option></select></label>
+      <label class="check"><input type="checkbox" name="spiritPet"> Legendary Spirit pet (first death costs 1)</label>
+      <label class="check"><input type="checkbox" name="ezpz"> Paul EZPZ active (+10 bonus)</label>
+      <menu>
+        <button value="cancel" class="btn ghost" formnovalidate>Cancel</button>
+        <button value="ok" class="btn primary">Create</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

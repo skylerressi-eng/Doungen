@@ -1,0 +1,44 @@
+{
+  "name": "F2 incorrect door corrected",
+  "description": "A door is wrongly recorded as a wall, cutting off part of the map. The planner reports unreachable objectives; correcting the door restores the route. A wrongly entered wither door without keys is rejected.",
+  "floor": "F2",
+  "party": [
+    { "id": "p1", "name": "Tank", "class": "tank", "isSelf": true },
+    { "id": "p2", "name": "Archer", "class": "archer" }
+  ],
+  "layout": [
+    "R1 R2 R2 BL",
+    "R1 R3 R4 R4",
+    "R5 R3 R6 R7",
+    "R5 R8 R6 R7",
+    "E R8 P1 R9"
+  ],
+  "rooms": { "E": { "type": "entrance" }, "BL": { "type": "blood" }, "P1": { "type": "puzzle", "puzzle": "teleport_maze" } },
+  "steps": [
+    {
+      "note": "R9 is only adjacent to P1 and R7; both connections are recorded as walls by mistake",
+      "elapsed": 0,
+      "events": [
+        { "type": "door_set", "a": "R9", "b": "P1", "doorType": "wall" },
+        { "type": "door_set", "a": "R9", "b": "R7", "doorType": "wall" },
+        { "type": "run_start" }
+      ],
+      "expect": { "warnings": ["unreachable"], "unreachable": 1, "notPlanned": ["R9"] }
+    },
+    {
+      "note": "Correction: P1-R9 is a normal door",
+      "elapsed": 20,
+      "events": [{ "type": "door_set", "a": "R9", "b": "P1", "doorType": "normal" }],
+      "expect": { "unreachable": 0, "planned": ["R9"], "noWarnings": ["unreachable"] }
+    },
+    {
+      "note": "Opening a wither door without a key is rejected",
+      "elapsed": 30,
+      "events": [
+        { "type": "door_set", "a": "R4", "b": "BL", "doorType": "wither" },
+        { "type": "door_open", "a": "R4", "b": "BL" }
+      ],
+      "expectError": "No wither key"
+    }
+  ]
+}
